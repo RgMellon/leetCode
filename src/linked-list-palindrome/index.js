@@ -1,99 +1,39 @@
-/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-/**
- * @param {ListNode} head
- * @return {boolean}
- */
-
-function defaultCompare(a, b) {
-  return a === b;
-}
-
 function ListNode(val, next) {
   this.val = val === undefined ? 0 : val;
   this.next = next === undefined ? null : next;
 }
 
-class LinkedList {
-  constructor(equalsFn = defaultCompare) {
-    this.count = 0;
-    this.head = undefined;
-    this.equalsFn = equalsFn;
+function isPalindrome(head) {
+  if (!head || !head.next) return true;
+
+  // Encontrar o meio da lista
+  let slow = head;
+  let fast = head;
+
+  while (fast && fast.next) {
+    slow = slow.next;
+    fast = fast.next.next;
   }
 
-  push(element) {
-    const node = new ListNode(element);
+  // Reverter a segunda metade da lista
+  let prev = null;
+  while (slow) {
+    const nextNode = slow.next;
+    slow.next = prev;
+    prev = slow;
+    slow = nextNode;
+  }
 
-    if (!this.head) {
-      this.head = node;
-    } else {
-      let current = this.head;
-
-      while (current.next != null) {
-        current = current.next;
-      }
-
-      current.next = node;
+  // Comparar a primeira metade com a segunda metade revertida
+  let left = head;
+  let right = prev;
+  while (right) {
+    if (left.val !== right.val) {
+      return false;
     }
-
-    this.count++;
+    left = left.next;
+    right = right.next;
   }
 
-  removeAtIndex(index) {
-    if (index >= 0 && index < this.count) {
-      let current = this.head;
-      if (index == 0) {
-        this.head = current.next;
-      } else {
-        let previous;
-        for (let i = 0; i < index; i++) {
-          previous = current;
-          current = current.next;
-        }
-        previous.next = current.next;
-        //remove algum item especifico
-      }
-      this.count--;
-      return current.val;
-    }
-    return undefined;
-  }
+  return true;
 }
-
-function createLinkedList(arr) {
-  if (arr.length === 0) return;
-  const list = new LinkedList();
-  list.push(arr[0]);
-
-  for (let i = 1; i < arr.length; i++) {
-    list.push(arr[i]);
-  }
-
-  return list;
-}
-
-var isPalindrome = function (head) {
-  const result = createLinkedList(head);
-
-  let isPalindrom = true;
-
-  while (result.count > 0) {
-    const currentElement = result.head.val;
-    const item = result.removeAtIndex(result.count - 1);
-
-    if (currentElement != item) {
-      isPalindrom = false;
-      break;
-    }
-    result.removeAtIndex(0);
-  }
-
-  return isPalindrom;
-};
-
-console.log(isPalindrome([1, 2]));
